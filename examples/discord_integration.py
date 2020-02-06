@@ -28,7 +28,7 @@ from discord.ext import commands as discord_commands
 from twitchio.ext import commands as commands
 
 
-class DiscordCog(commands.Bot):
+class DiscordCog(discord_commands.Cog, commands.Bot):
 
     def __init__(self, bot):
         # Discord bot instance
