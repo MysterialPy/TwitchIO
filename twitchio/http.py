@@ -75,7 +75,7 @@ class HTTPSession:
             data = await resp.json()
             self.token = data['access_token']
             self._refresh_token = data.get('refresh_token', None)
-            logging.info("Invalid or no token found, generated new token: %s", self.token)
+            logging.info("Invalid or no token found, generated new token")
 
     async def request(self, method, url, *, params=None, limit=None, **kwargs):
         count = kwargs.pop('count', False)
@@ -93,7 +93,7 @@ class HTTPSession:
             headers['Client-ID'] = str(self.client_id)
 
         if self.client_secret and self.client_id and not self.token:
-            logging.info("No token passed, generating new token under client id {0} and client secret {1}")
+            logging.info("No token passed, generating new token using client id and secret")
             await self.generate_token()
 
         if self.token is not None:
