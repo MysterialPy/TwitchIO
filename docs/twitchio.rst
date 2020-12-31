@@ -8,22 +8,22 @@ For support using TwitchIO, please join the official `support server
 
 Installation
 ---------------------------
-TwitchIO is currently not on PyPI and thus needs to be installed using git.
-The following commands are currently the valid ways of installing TwitchIO.
 
 **TwitchIO requires Python 3.6 or higher.**
 
-**Windows**
+It is usually recommended you install development packages in your own project's virtual environment.
+Corey Schafer has some great tutorials on setting these up: `Linux/MacOS venv <https://www.youtube.com/watch?v=Kg1Yvry_Ydk>`_ 
+or `Windows venv <https://www.youtube.com/watch?v=APOPm01BVrk>`_
 
 .. code:: sh
 
-    py -version -m pip install git+https://github.com/TwitchIO/TwitchIO.git
+    pip install twitchio
 
-**Linux**
+**Installing from latest git**
 
 .. code:: sh
 
-    python3 -m pip install git+https://github.com/TwitchIO/TwitchIO.git
+    pip install git+https://github.com/TwitchIO/TwitchIO.git
 
 Getting Started
 ----------------------------
