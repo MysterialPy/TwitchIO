@@ -24,28 +24,34 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+import discord
 from discord.ext import commands as discord_commands
 from twitchio.ext import commands as commands
 
-
-class DiscordCog(commands.Bot):
-
+class Twitch(discord_commands.Cog):
     def __init__(self, bot):
-        # Discord bot instance
         self.discord_bot = bot
-        super().__init__(irc_token='...', nick='...', prefix='!', initial_channels=['...'])
-
-        # Start the Twitch Bot
-        self.loop.create_task(self.start())
+        self.bot = commands.Bot(
+            # set up the bot
+            irc_token='',
+            client_id='',
+            nick='ArthritisAC',
+            prefix='--',
+            initial_channels=['#ArthritisAC']
+        )
+        self.discord_bot.loop.create_task(self.bot.start())
+        self.bot.command(name="test")(self.twitch_command)
+        self.bot.listen("event_message")(self.event_message)
 
     # Discord.py event
+    @discord_commands.Cog.listener()
     async def on_message(self, message):
         print(message.content)
 
     # TwitchIO event
     async def event_message(self, message):
         print(message.content)
-        await self.handle_commands(message)
+        await self.bot.handle_commands(message)
 
     # Discord command
     @discord_commands.command(name='test')
@@ -53,11 +59,8 @@ class DiscordCog(commands.Bot):
         await ctx.send('Hai there!')
 
     # TwitchIO command
-    @commands.command(name='test')
     async def twitch_command(self, ctx):
         await ctx.send('Hai there!')
 
-
-# Add the Discord cog as per usual
 def setup(bot):
-    bot.add_cog(DiscordCog(bot))
+    bot.add_cog(Twitch(bot))
