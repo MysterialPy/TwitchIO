@@ -48,7 +48,7 @@ setup(
     author="TwitchIO",
     url="https://github.com/TwitchIO/TwitchIO",
     version=version,
-    packages=["twitchio", "twitchio.ext.commands", "twitchio.ext.pubsub"],
+    packages=["twitchio", "twitchio.ext.commands", "twitchio.ext.pubsub", "twitchio.ext.webhooks"],
     license="MIT",
     description="A Python IRC and API wrapper for Twitch.",
     long_description=readme,
