@@ -159,10 +159,15 @@ class Messageable(metaclass=abc.ABCMeta):
 
         await ws.send_privmsg(channel, content=f'.clear')
 
-    async def slow(self):
+    async def slow(self, time: int=30):
         """|coro|
 
-        Method which sends a .slow to Twitch and sets the channel to slowmode.
+        A method that sends a ".slow" to Twitch putting the channel into slowmode for a given time.
+
+        Parameters
+        ------------
+        time: Optional[int]
+            The amount of time to set the slowmode to.
         """
 
         ws = self._get_socket
@@ -170,7 +175,7 @@ class Messageable(metaclass=abc.ABCMeta):
 
         self.check_bucket(channel)
 
-        await ws.send_privmsg(channel, content=f'.slow')
+        await ws.send_privmsg(channel, content=f'.slow {time}')
 
     async def unslow(self):
         """|coro|
