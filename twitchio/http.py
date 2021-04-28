@@ -102,6 +102,9 @@ class HTTPSession:
         #else: we'll probably get a 401, but we can check this in the response
 
         cursor = None
+        
+        if limit == 0:  # Guard - assumes that if given limit was zero, then client wanted all results
+            limit = None
 
         def reached_limit():
             return limit and len(data) >= limit
@@ -113,13 +116,11 @@ class HTTPSession:
             to_get = limit - len(data)
             return str(to_get) if to_get < 100 else '100'
 
-        is_finished = False
-        while not is_finished:
-            if limit is not None:
-                if cursor is not None:
-                    params.append(('after', cursor))
+        while not reached_limit():
+            if cursor is not None:
+                params.append(('after', cursor))
 
-                params.append(('first', get_limit()))
+            params.append(('first', get_limit()))
 
             body, is_text = await self._request(method, url, params=params, headers=headers, **kwargs)
             if is_text:
@@ -142,8 +143,6 @@ class HTTPSession:
             else:
                 if not cursor:
                     break
-
-            is_finished = reached_limit() if limit is not None else True
 
         return data
 
