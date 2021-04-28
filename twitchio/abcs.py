@@ -62,7 +62,7 @@ class Messageable(metaclass=abc.ABCMeta):
 
     __slots__ = ()
 
-    __invalid__ = ('ban', 'unban', 'timeout', 'w', 'colour', 'color', 'mod',
+    __invalid__ = ('ban', 'unban', 'timeout', 'untimeout', 'w', 'colour', 'color', 'mod',
                    'unmod', 'clear', 'subscribers', 'subscriberoff', 'slow', 'slowoff',
                    'r9k', 'r9koff', 'emoteonly', 'emoteonlyoff', 'host', 'unhost')
 
@@ -213,6 +213,24 @@ class Messageable(metaclass=abc.ABCMeta):
         self.check_bucket(channel)
 
         await ws.send_privmsg(channel, content=f'.timeout {user} {duration} {reason}')
+
+    async def untimeout(self, user: str):
+        """|coro|
+
+        Method which sends a .untimeout command to Twitch.
+
+        Parameters
+        ------------
+        user: str
+            The user you wish to untimeout.
+        """
+
+        ws = self._get_socket
+        channel, _ = self._get_channel()
+
+        self.check_bucket(channel)
+
+        await ws.send_privmsg(channel, content=f'.untimeout {user}')
 
     async def ban(self, user: str, reason: str=''):
         """|coro|
