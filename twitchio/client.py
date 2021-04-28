@@ -262,6 +262,17 @@ class Client:
         """
         await self._connection.join_channels(*channels)
 
+    async def part_channels(self, channels: Union[List[str], Tuple[str]]):
+        """|coro|
+        Part the specified channels.
+
+        Parameters
+        ------------
+        channels: Union[List[str], Tuple[str]]
+            The channels in either a list or tuple form to part.
+        """
+        await self._connection.part_channels(*channels)
+
     @property
     def connected_channels(self) -> List[Channel]:
         """A list of currently connected :class:`.Channel`"""
