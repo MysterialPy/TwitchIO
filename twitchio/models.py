@@ -80,6 +80,9 @@ class BitsLeaderboard:
         self.ended_at = datetime.datetime.fromisoformat(data["date_range"]["ended_at"])
         self.leaders = [BitLeaderboardUser(http, x) for x in data["data"]]
 
+    def __repr__(self):
+        return f"<BitsLeaderboard started_at={self.started_at} ended_at={self.ended_at}>"
+
 
 class CheerEmoteTier:
 
@@ -93,6 +96,9 @@ class CheerEmoteTier:
         self.can_cheer: bool = data["can_cheer"]
         self.show_in_bits_card: bool = data["show_in_bits_card"]
 
+    def __repr__(self):
+        return f"<CheerEmoteTier id={self.id} min_bits={self.min_bits}>"
+
 
 class CheerEmote:
 
@@ -100,12 +106,15 @@ class CheerEmote:
 
     def __init__(self, http: "TwitchHTTP", data: dict):
         self._http = http
-        self.prefix = data["prefix"]
+        self.prefix: str = data["prefix"]
         self.tiers = [CheerEmoteTier(x) for x in data["tiers"]]
-        self.type = data["type"]
-        self.order = data["order"]
+        self.type: str = data["type"]
+        self.order: str = data["order"]
         self.last_updated = datetime.datetime.strptime(data["last_updated"], "%Y-%m-%dT%H:%M:%SZ")
-        self.charitable = data["is_charitable"]
+        self.charitable: bool = data["is_charitable"]
+
+    def __repr__(self):
+        return f"<CheerEmote prefix={self.prefix} type={self.type} order={self.order}>"
 
 
 class Clip:
@@ -139,6 +148,9 @@ class Clip:
         self.created_at = datetime.datetime.strptime(data["created_at"], "%Y-%m-%dT%H:%M:%SZ")
         self.thumbnail_url = data["thumbnail_url"]
 
+    def __repr__(self):
+        return f"<Clip id={self.id} broadcaster={self.broadcaster} creator={self.creator}>"
+
 
 class HypeTrainContribution:
 
@@ -148,6 +160,9 @@ class HypeTrainContribution:
         self.total: int = data["total"]
         self.type: str = data["type"]
         self.user = PartialUser(http, id=data["user"], name=None)  # we'll see how this goes
+
+    def __repr__(self):
+        return f"<HypeTrainContribution total={self.total} type={self.type} user={self.user}>"
 
 
 class HypeTrainEvent:
@@ -186,6 +201,9 @@ class HypeTrainEvent:
         self.top_contributions = [HypeTrainContribution(http, x) for x in data["event_data"]["top_contributions"]]
         self.contributions_total: int = data["event_data"]["total"]
 
+    def __repr__(self):
+        return f"<HypeTrainEvent id={self.id} type={self.type} level={self.level} broadcaster={self.broadcaster}>"
+
 
 class BanEvent:
 
@@ -206,6 +224,9 @@ class BanEvent:
             else None
         )
 
+    def __repr__(self):
+        return f"<BanEvent id={self.id} type={self.type} broadcaster={self.broadcaster} user={self.user}>"
+
 
 class FollowEvent:
 
@@ -219,8 +240,11 @@ class FollowEvent:
         to: Union[User, PartialUser] = None,
     ):
         self.from_user = from_ or PartialUser(http, data["from_id"], data["from_name"])
-        self.to_user = to or PartialUser(http, data["to_id"], data["to_id"])
+        self.to_user = to or PartialUser(http, data["to_id"], data["to_name"])
         self.followed_at = datetime.datetime.strptime(data["followed_at"], "%Y-%m-%dT%H:%M:%SZ")
+
+    def __repr__(self):
+        return f"<FollowEvent from_user={self.from_user} to_user={self.to_user} followed_at={self.followed_at}>"
 
 
 class SubscriptionEvent:
@@ -240,6 +264,10 @@ class SubscriptionEvent:
         self.plan_name: str = data["plan_name"]
         self.gift: bool = data["is_gift"]
 
+    def __repr__(self):
+        return f"<SubscriptionEvent broadcaster={self.broadcaster} user={self.user} tier={self.tier} " \
+               f"plan_name={self.plan_name} gift={self.gift}>"
+
 
 class Marker:
 
@@ -252,6 +280,9 @@ class Marker:
         self.position: int = data["position_seconds"]
         self.url: Optional[str] = data.get("URL", None)
 
+    def __repr__(self):
+        return f"<Marker id={self.id} created_at={self.created_at} position={self.position} url={self.url}>"
+
 
 class VideoMarkers:
 
@@ -260,6 +291,9 @@ class VideoMarkers:
     def __init__(self, data: dict):
         self.id: str = data["video_id"]
         self.markers = [Marker(d) for d in data]
+
+    def __repr__(self):
+        return f"<VideoMarkers id={self.id}>"
 
 
 class Game:
@@ -270,6 +304,9 @@ class Game:
         self.id: int = int(data["id"])
         self.name: str = data["name"]
         self.box_art_url: str = data["box_art_url"]
+
+    def __repr__(self):
+        return f"<Game id={self.id} name={self.name}>"
 
     def art_url(self, width: int, height: int) -> str:
         """
@@ -301,6 +338,9 @@ class ModEvent:
         self.broadcaster = broadcaster
         self.user = PartialUser(http, data["event_data"]["user_id"], data["event_data"]["user_name"])
 
+    def __repr__(self):
+        return f"<ModEvent id={self.id} type={self.type} broadcaster={self.broadcaster} user={self.user}>"
+
 
 class AutomodCheckMessage:
 
@@ -314,6 +354,9 @@ class AutomodCheckMessage:
     def _to_dict(self):
         return {"msg_id": self.id, "msg_text": self.text, "user_id": str(self.user_id)}
 
+    def __repr__(self):
+        return f"<AutomodCheckMessage id={self.id} user_id={self.user_id}>"
+
 
 class AutomodCheckResponse:
 
@@ -322,6 +365,9 @@ class AutomodCheckResponse:
     def __init__(self, data: dict):
         self.id: str = data["msg_id"]
         self.permitted: bool = data["is_permitted"]
+
+    def __repr__(self):
+        return f"<AutomodCheckResponse id={self.id} permitted={self.permitted}>"
 
 
 class Extension:
@@ -334,6 +380,9 @@ class Extension:
         self.active: bool = data["active"]
         self._x = None
         self._y = None
+
+    def __repr__(self):
+        return f"<Extension id={self.id} version={self.version} active={self.active}>"
 
     @classmethod
     def new(cls, active: bool, version: str, id: str, x: int = None, y: int = None) -> "Extension":
@@ -365,6 +414,9 @@ class MaybeActiveExtension(Extension):
         self.can_activate: bool = data["can_activate"]
         self.types: List[str] = data["type"]
 
+    def __repr__(self):
+        return f"<MaybeActiveExtension id={self.id} version={self.version} name={self.name}>"
+
 
 class ActiveExtension(Extension):
 
@@ -377,6 +429,9 @@ class ActiveExtension(Extension):
         self.name: Optional[str] = data.get("name", None)
         self.x: Optional[int] = data.get("x", None)  # x and y only show for component extensions.
         self.y: Optional[int] = data.get("y", None)
+
+    def __repr__(self):
+        return f"<ActiveExtension id={self.id} version={self.version} name={self.name}>"
 
 
 class ExtensionBuilder:
@@ -433,6 +488,9 @@ class Video:
         self.type: str = data["type"]
         self.duration: str = data["duration"]
 
+    def __repr__(self):
+        return f"<Video id={self.id} title={self.title} url={self.url}>"
+
     async def delete(self, token: str):
         """|coro|
         Deletes the video. For bulk deletion see :ref:`twitchio.Client.delete_videos`
@@ -455,6 +513,9 @@ class Tag:
         self.localization_names: Dict[str, str] = data["localization_names"]
         self.localization_descriptions: Dict[str, str] = data["localization_descriptions"]
 
+    def __repr__(self):
+        return f"<Tag id={self.id}>"
+
 
 class WebhookSubscription:
 
@@ -464,3 +525,6 @@ class WebhookSubscription:
         self.callback: str = data["callback"]
         self.expires_at = datetime.datetime.strptime(data["expires_at"], "%Y-%m-%dT%H:%M:%SZ")
         self.topic: str = data["topic"]
+
+    def __repr__(self):
+        return f"<WebhookSubscription callback={self.callback} topic={self.topic} expires_at={self.expires_at}>"

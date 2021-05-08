@@ -59,28 +59,6 @@ class Messageable(abc.ABC):
 
     __slots__ = ()
 
-    __invalid__ = (
-        "ban",
-        "unban",
-        "timeout",
-        "w",
-        "colour",
-        "color",
-        "mod",
-        "unmod",
-        "clear",
-        "subscribers",
-        "subscriberoff",
-        "slow",
-        "slowoff",
-        "r9k",
-        "r9koff",
-        "emoteonly",
-        "emoteonlyoff",
-        "host",
-        "unhost",
-    )
-
     @abc.abstractmethod
     def _fetch_channel(self):
         raise NotImplementedError
@@ -114,17 +92,12 @@ class Messageable(abc.ABC):
         if len(content) > 500:
             raise InvalidContent("Content must not exceed 500 characters.")
 
-        if content.startswith((".", "/")):
-            if content.lstrip("./").startswith(self.__invalid__):
-                raise InvalidContent("Unauthorised chat command. Use built-in methods.")
-
     async def send(self, content: str):
         """|coro|
 
         Send a message to the destination associated with the dataclass.
 
         Destination will either be a channel or user.
-        Chat commands are not allowed to be invoked with this method.
 
         Parameters
         ------------
@@ -148,6 +121,6 @@ class Messageable(abc.ABC):
             name = entity.name
 
         if not entity.__messageable_channel__:
-            await ws.send(f"PRIVMSG #jtv :/w {name} {content}")
+            await ws.send(f"PRIVMSG #jtv :/w {name} {content}\r\n")
         else:
             await ws.send(f"PRIVMSG #{name} :{content}\r\n")

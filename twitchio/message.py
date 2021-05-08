@@ -24,11 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 import datetime
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from .channel import Channel
-    from .user import User
+    from .chatter import Chatter, PartialChatter
 
 
 class Message:
@@ -49,7 +49,7 @@ class Message:
             self._timestamp = time.time()
 
     @property
-    def author(self) -> "User":
+    def author(self) -> Union["Chatter", "PartialChatter"]:
         """The User object associated with the Message."""
         return self._author
 

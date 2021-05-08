@@ -31,6 +31,7 @@ from .models import BitsLeaderboard
 
 if TYPE_CHECKING:
     from .websocket import WSConnection
+    from .user import User
 
 
 __all__ = ("Channel",)
@@ -113,14 +114,14 @@ class Channel(Messageable):
         except KeyError:
             return None
 
-    async def user(self, force=False):
+    async def user(self, force=False) -> "User":
         """|coro|
         Fetches the User from the api.
 
         Parameters
         -----------
-        force: bool
-            Whether to force a fetch from the api, or try and pull from the cache. Defaults to False
+        force: :class:`bool`
+            Whether to force a fetch from the api, or try and pull from the cache. Defaults to `False`
 
         Returns
         --------
@@ -147,3 +148,17 @@ class Channel(Messageable):
         """
         data = await self._ws._client._http.get_bits_board(token, period, user_id, started_at)
         return BitsLeaderboard(self._ws._client._http, data)
+
+    async def whisper(self, content: str):
+        """|coro|
+        Whispers the user behind the channel. This will not work if the channel is the same as the one you are sending the message from.
+
+        .. warning:
+            Whispers are very unreliable on twitch. If you do not receive a whisper, this is probably twitch's fault, not the library's.
+
+        Parameters
+        -----------
+        content: :class:`str`
+            The content to send to the user
+        """
+        await self.send(f"/w {self.name} {content}")

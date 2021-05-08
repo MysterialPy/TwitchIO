@@ -24,7 +24,6 @@ DEALINGS IN THE SOFTWARE.
 
 import importlib
 import inspect
-import itertools
 import sys
 import traceback
 from typing import Callable, Optional, Union, Coroutine
@@ -198,7 +197,24 @@ class Bot(Client):
         return cog
 
     async def get_context(self, message, *, cls=None):
-        # TODO Docs
+        """Get a Context object from a message.
+
+        Parameters
+        ----------
+        message: :class:`.Message`
+            The message object to get context for.
+        cls
+            The class to return. Defaults to Context. Its constructor must take message, prefix, valid, and bot
+            as arguments.
+
+        Returns
+        ---------
+        An instance of cls.
+
+        Raises
+        ---------
+        :class:`.CommandNotFound` No valid command was passed
+        """
         if not cls:
             cls = Context
 
@@ -242,6 +258,7 @@ class Bot(Client):
         if not context.prefix or not context.is_valid:
             return
 
+        self.run_event("command_invoke", context)
         await context.command(context)
 
     def load_module(self, name: str):
@@ -465,3 +482,11 @@ class Bot(Client):
             return cmd
 
         return decorator
+
+    def check(self, func: Callable[[Context], bool]) -> Callable:
+        if func in self._checks:
+            raise ValueError("The function is already registered as a bot check")
+
+        self._checks.append(func)
+        return func
+

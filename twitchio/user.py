@@ -34,7 +34,7 @@ from .rewards import CustomReward
 if TYPE_CHECKING:
     from .http import TwitchHTTP
     from .channel import Channel
-    from .models import BitsLeaderboard, Clip, ExtensionBuilder, Tag
+    from .models import BitsLeaderboard, Clip, ExtensionBuilder, Tag, FollowEvent
 
 
 __all__ = (
@@ -56,6 +56,9 @@ class PartialUser:
         self._http = http
 
         self._cached_rewards = None
+
+    def __repr__(self):
+        return f"<PartialUser id={self.id}, name={self.name}>"
 
     @property
     def channel(self) -> Optional["Channel"]:
@@ -374,7 +377,7 @@ class PartialUser:
         data = await self._http.get_stream_key(token, str(self.id))
         return data
 
-    async def fetch_following(self, token: str = None):
+    async def fetch_following(self, token: str = None) -> List["FollowEvent"]:
         """|coro|
         Fetches a list of users that this user is following.
 
@@ -651,3 +654,6 @@ class User(PartialUser):
         self.offline_image = data["offline_image_url"]
         self.view_count = (data["view_count"],)
         self.email = data.get("email", None)
+
+    def __repr__(self):
+        return f"<User id={self.id} name={self.name} display_name={self.display_name} type={self.type}>"

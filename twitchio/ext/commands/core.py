@@ -35,7 +35,7 @@ from .errors import *
 from . import builtin_converter
 
 if TYPE_CHECKING:
-    from twitchio import Message
+    from twitchio import Message, Chatter, PartialChatter
     from . import Cog, Bot
     from .stringparser import StringParser
 
@@ -234,6 +234,8 @@ class Command:
                 await try_run(self.event_error(*args, e))
 
             context.bot.run_event("command_error", context, e)
+        else:
+            context.bot.run_event("command_complete", context)
 
         # Invoke our after command hooks
         if self._after_invoke:
@@ -265,18 +267,19 @@ class Command:
         else:
             checks = self._checks
 
-        if not checks:
-            return True
-
         try:
             for predicate in checks:
-                if inspect.isawaitable(predicate):
-                    result = await predicate(context)
-                else:
-                    result = predicate(context)
+                result = predicate(context)
 
-                if result is False:
-                    raise CheckFailure(f"The check <{predicate}> for command <{self.name}> failed.")
+                if inspect.isawaitable(result):
+                    result = await result
+
+                if not result:
+                    raise CheckFailure(f"The check {predicate} for command {self.name} failed.")
+
+            if self.cog:
+                if not await self.cog.cog_check(context):
+                    raise CheckFailure(f"The cog check for command <{self.name}> failed.")
 
             return True
         except Exception as e:
@@ -367,7 +370,7 @@ class Context(Messageable):
     def __init__(self, message: "Message", bot: "Bot", **attrs):
         self.message = message
         self.channel = message.channel
-        self.author = message.author
+        self.author: Union["Chatter", "PartialChatter"] = message.author
 
         self.prefix: Optional[str] = attrs.get("prefix")
 

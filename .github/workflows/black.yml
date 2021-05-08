@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - uses: psf/black@master
+      - uses: psf/black@main
         with:
           args: ". --check --line-length 120"
